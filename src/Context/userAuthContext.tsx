@@ -11,6 +11,7 @@ type AuthContextTypes = {
     logOut: typeof logOut,
     googleLogIn: typeof googleLogIn,
 }
+
 type userAuthContextProviderTypes = {
     children: React.ReactNode
 }
@@ -19,18 +20,21 @@ type userAuthContextProviderTypes = {
 const signIn = (email: string, password: string) => {
     return createUserWithEmailAndPassword(auth, email, password);
 }
+
 const logIn = (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
 }
+
 const logOut = () => {
     return signOut(auth)
 }
+
 const googleLogIn = () => {
     const googleProvider = new GoogleAuthProvider();
     return signInWithPopup(auth, googleProvider)
 }
 
-
+//declaring context using functions and types in it
 const AuthContext = createContext<AuthContextTypes>(
     {
         user: null,
@@ -41,6 +45,7 @@ const AuthContext = createContext<AuthContextTypes>(
     }
 )
 
+//declaring main logic
 const UserAuthContextProvider: React.FunctionComponent<userAuthContextProviderTypes> = ({children}) => {
     const [ user, setUser ] = useState<User | null>(null)
     useEffect(() => {
