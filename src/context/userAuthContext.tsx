@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, type User } from "firebase/auth";
 import { firebaseAuth } from "@/firebaseConfig";
-
 type userAuthContextProps = {
     user: User | null,
     logIn: typeof logIn,
@@ -39,17 +38,13 @@ const userAuthContext = createContext<userAuthContextProps>(
 
 export const UserAuthContextProvider: React.FunctionComponent<userAuthContextProviderProps> = ({children}) => {
     const [user, setUser] = useState<User | null>(null)
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-            if(user){
-                setUser(user)
-            } else {
-                setUser(null)
-            }
-            return () => {
-                unsubscribe()
-            }
+            setUser(user)
+            setLoading(false)
         })
+        return () => unsubscribe()
     }, [])
     const value = {
         user,
@@ -60,7 +55,7 @@ export const UserAuthContextProvider: React.FunctionComponent<userAuthContextPro
     }
     return (
         <userAuthContext.Provider value={value}>
-            {children}
+            {!loading && children}
         </userAuthContext.Provider>
     )
 }

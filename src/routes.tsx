@@ -7,6 +7,7 @@ import MyPosts from "./pages/myPosts"
 import Profile from "./pages/profile"
 import SignUp from "./pages/signUp"
 import ProtectedRoutes from "./components/ProtectedRoutes"
+import PublicRoute from "./components/PublicRoute"
 
 const router = createBrowserRouter([
     {
@@ -35,15 +36,13 @@ const router = createBrowserRouter([
         ]
     },
     {
-        path: "/login",
-        element: <Login />,
-        errorElement: <Error />
-    },
-    {
-        path: "/signup",
-        element: <SignUp />,
-        errorElement: <Error />
+        element: <PublicRoute />,
+        children: [
+            { path: "/login", element: <Login /> },
+            { path: "/signup", element: <SignUp /> }
+        ]
     }
+
 ])
 
-export default router
+export default router 

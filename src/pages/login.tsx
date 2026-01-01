@@ -36,7 +36,7 @@ export default function SignUp() {
       return
     }
 
-    await authContext?.signUp(userInfo.email, userInfo.password)
+    await authContext?.logIn(userInfo.email, userInfo.password)
   }
 
   return (
