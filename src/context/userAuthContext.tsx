@@ -5,9 +5,9 @@ import { firebaseAuth } from "@/firebaseConfig";
 type userAuthContextProps = {
     user: User | null,
     logIn: typeof logIn,
-    signIn: typeof signIn,
+    signUp: typeof signUp,
     logOut: typeof logOut,
-    signInWithGoogle: typeof signInWithGoogle
+    signUpWithGoogle: typeof signUpWithGoogle
 }
 type userAuthContextProviderProps = {
     children: React.ReactNode
@@ -16,13 +16,13 @@ type userAuthContextProviderProps = {
 const logIn = (email: string, password: string) => {
     return signInWithEmailAndPassword(firebaseAuth, email, password)
 }
-const signIn = (email: string, password: string) => {
+const signUp = (email: string, password: string) => {
     return createUserWithEmailAndPassword(firebaseAuth, email, password)
 }
 const logOut = () => {
     signOut(firebaseAuth)
 }
-const signInWithGoogle = () => {
+const signUpWithGoogle = () => {
     const googleProvider = new GoogleAuthProvider()
     return signInWithPopup(firebaseAuth, googleProvider)
 }
@@ -31,9 +31,9 @@ const userAuthContext = createContext<userAuthContextProps>(
     {
         user: null,
         logIn,
-        signIn,
+        signUp,
         logOut,
-        signInWithGoogle
+        signUpWithGoogle
     }
 )
 
@@ -54,9 +54,9 @@ export const UserAuthContextProvider: React.FunctionComponent<userAuthContextPro
     const value = {
         user,
         logIn,
-        signIn,
+        signUp,
         logOut,
-        signInWithGoogle
+        signUpWithGoogle
     }
     return (
         <userAuthContext.Provider value={value}>
