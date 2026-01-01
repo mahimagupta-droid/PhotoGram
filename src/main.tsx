@@ -10,7 +10,6 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <UserAuthContextProvider>
       <RouterProvider router={router} />
-      <App />
     </UserAuthContextProvider>
   </StrictMode>,
 )
