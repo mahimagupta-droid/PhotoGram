@@ -14,10 +14,10 @@ type userAuthContextProviderProps = {
 }
 
 const logIn = (email: string, password: string) => {
-    return signInWithEmailAndPassword(firebaseAuth, email, password)
+    return signInWithEmailAndPassword(firebaseAuth, email, password).then(() => alert("Login Successful"))
 }
 const signUp = (email: string, password: string) => {
-    return createUserWithEmailAndPassword(firebaseAuth, email, password)
+    return createUserWithEmailAndPassword(firebaseAuth, email, password).then(() => alert("Sign Up Successful"))
 }
 const logOut = () => {
     signOut(firebaseAuth)
