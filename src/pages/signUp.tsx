@@ -14,10 +14,10 @@ import { useState } from "react"
 import { useUserContext } from "@/context/userAuthContext"
 import { type userSignUpInfo } from "@/types"
 
-import image1 from "/src/images/image1.jpg"
-import image2 from "/src/images/image2.jpg"
-import image3 from "/src/images/image3.jpg"
-import image4 from "/src/images/image4.jpg"
+import image1 from "/src/assets/images/image1.jpg"
+import image2 from "/src/assets/images/image2.jpg"
+import image3 from "/src/assets/images/image3.jpg"
+import image4 from "/src/assets/images/image4.jpg"
 
 export default function SignUp() {
   const authContext = useUserContext()

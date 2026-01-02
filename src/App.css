@@ -214,6 +214,10 @@
   .table {
     display: table;
   }
+  .size-6 {
+    width: calc(var(--spacing) * 6);
+    height: calc(var(--spacing) * 6);
+  }
   .size-8 {
     width: calc(var(--spacing) * 8);
     height: calc(var(--spacing) * 8);
@@ -225,6 +229,9 @@
   .size-10 {
     width: calc(var(--spacing) * 10);
     height: calc(var(--spacing) * 10);
+  }
+  .h-6 {
+    height: calc(var(--spacing) * 6);
   }
   .h-8 {
     height: calc(var(--spacing) * 8);
@@ -246,6 +253,9 @@
   }
   .min-h-screen {
     min-height: 100vh;
+  }
+  .w-6 {
+    width: calc(var(--spacing) * 6);
   }
   .w-48 {
     width: calc(var(--spacing) * 48);
