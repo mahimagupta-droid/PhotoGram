@@ -7,6 +7,7 @@ import notificationIcon from "/src/assets/icons/notifications.png";
 import profileIcon from "/src/assets/icons/profile.png";
 import settingsIcon from "/src/assets/icons/settings.png";
 import logoutIcon from "/src/assets/icons/logout.png";
+import createPostIcon from "/src/assets/icons/createPost.png"
 import { Link, useLocation } from "react-router-dom";
 import { buttonVariants } from "./ui/button";
 import { useUserContext } from "@/context/userAuthContext";
@@ -45,6 +46,11 @@ const navItems = [
         name: "Settings",
         icon: settingsIcon,
         link: "/#"
+    },
+    {
+        name: "Create Post",
+        icon: createPostIcon,
+        link: "/createpost"
     }
 ]
 
@@ -59,7 +65,7 @@ const Sidebar = () => {
         {navItems.map((items) =>(
             <div className={cn(buttonVariants({variant: "default"}),
             //check if the specified path link is active using ternary operator and then apply the required CSS
-            pathname === items.link? "bg-white text-gray-800 hover:bg-gray-700 hover:text-gray-950 rounded-none" : 
+            pathname === items.link? "bg-white text-gray-800 hover:bg-gray-800 hover:text-gray-200 rounded-none" : 
             "bg-transparent hover:bg-gray-900 rounded-none",
             "justify-start w-full"
             )} key={items.name}>
