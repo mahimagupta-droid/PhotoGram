@@ -52,7 +52,7 @@ const Sidebar = () => {
     const { pathname } = useLocation()
     const {logOut} = useUserContext()
   return (
-    <nav className="flex flex-col relative h-screen max-w-sm w-full">
+    <nav className="flex flex-col space-y-2 relative h-screen max-w-sm w-full">
         <div className="flex justify-center m-5">
             <div className="text-white text-lg">PhotoGram</div>
         </div>
