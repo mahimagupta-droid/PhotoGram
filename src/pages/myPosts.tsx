@@ -1,11 +1,11 @@
-import React from 'react'
+import Layout from "@/components/layout"
 
-type Props = {}
-
-const MyPosts = (props: Props) => {
+const Home = () => {
   return (
-    <div>MyPosts</div>
+    <Layout>
+      <div>My Posts</div>
+    </Layout>
   )
 }
 
-export default MyPosts
+export default Home

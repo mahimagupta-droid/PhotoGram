@@ -1,11 +1,11 @@
-import React from 'react'
+import Layout from "@/components/layout"
 
-type Props = {}
-
-const Profile = (props: Props) => {
+const Home = () => {
   return (
-    <div>Profile</div>
+    <Layout>
+      <div>Profile</div>
+    </Layout>
   )
 }
 
-export default Profile
+export default Home
