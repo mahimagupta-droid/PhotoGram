@@ -1,23 +1,29 @@
-import Sidebar from "./Sidebar"
-import USerList from "./userList"
+import Sidebar from "./Sidebar";
+import UserList from "./userList"; // Fixed typo
 
 type LayoutProps = {
-    children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
-const Layout = ({children}: LayoutProps) => {
+const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex bg-white">
-        <aside className="flex gap-x-4 bg-gray-800 w-64 h-screen left-0 top-0 z-50 lg:w-60">
-            <Sidebar />
-        </aside>
-        <div className="lg:ml-60 lg:mr-60 p-8 flex-1 ml-36">{children}</div>
-        <div className="hidden lg:block gap-x-4 bg-gray-800 p-4 w-64 h-screen left-0 top-0 z-50 lg:w-60">
-            <USerList />
-        </div>
-    </div>
-    
-  )
-}
+    <div className="flex bg-white min-h-screen">
+      {/* Sidebar - Fixed Left */}
+      <aside className="fixed left-0 top-0 h-screen w-0 sm:w-16 lg:w-60 bg-gray-800 z-50 transition-all overflow-hidden">
+        <Sidebar />
+      </aside>
 
-export default Layout 
+      {/* Main Content - Pushed by Sidebar */}
+      <main className="flex-1 p-8 sm:ml-16 lg:ml-60 lg:mr-60 w-full">
+        {children}
+      </main>
+
+      {/* Right UserList - Fixed Right (Hidden on mobile) */}
+      <aside className="hidden lg:block fixed right-0 top-0 h-screen w-60 bg-gray-800 p-4 z-50">
+        <UserList />
+      </aside>
+    </div>
+  );
+};
+
+export default Layout;

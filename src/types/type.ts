@@ -1,4 +1,4 @@
-import type { OutputFileEntry } from "@uploadcare/react-uploader";
+import type { OutputFileEntry } from "@uploadcare/blocks";
 
 export type userLoginInfo = {
     email: string;
@@ -25,6 +25,6 @@ export type PhotoMeta = {
     cdnUrl: string
 }
 
-export type fileEntry = {
+export type FileEntry = {
     files: OutputFileEntry[]
 }  

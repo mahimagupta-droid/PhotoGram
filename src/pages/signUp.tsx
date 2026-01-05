@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { useUserContext } from "@/context/userAuthContext"
-import { type userSignUpInfo } from "@/types"
+import { type userSignUpInfo } from "@/types/type"
 
 import image1 from "/src/assets/images/image1.jpg"
 import image2 from "/src/assets/images/image2.jpg"
