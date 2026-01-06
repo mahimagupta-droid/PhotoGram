@@ -44,8 +44,6 @@ const CreatePost = () => {
     } else {
       navigate("/login");
     }
-    
-    
   };
 
   return (

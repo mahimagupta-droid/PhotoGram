@@ -3,9 +3,9 @@ import { app } from "@/firebaseConfig";
 import { collection, addDoc, query, orderBy, getDoc, doc, deleteDoc } from "firebase/firestore";
 const COLLECTION_NAME = "posts";
 import { where } from "firebase/firestore";
-import { getDatabase } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
 
-const db = getDatabase(app) 
+const db = getFirestore(app) 
 
 export const createPost = (post: postData) => {
     return addDoc(collection(db, COLLECTION_NAME), post);
