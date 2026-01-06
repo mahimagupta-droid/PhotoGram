@@ -28,3 +28,13 @@ export type PhotoMeta = {
 export type FileEntry = {
     files: OutputFileEntry[]
 }  
+
+export type DocResponse = {
+    id: string,
+    caption: string,
+    photos: PhotoMeta[],
+    likes: number,
+    userlikes: [],
+    userid: string | null,
+    date: Date
+}

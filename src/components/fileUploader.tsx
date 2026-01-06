@@ -9,13 +9,15 @@ LR.registerBlocks(LR);
 interface IFileUploaderProps {
   fileEntry: FileEntry;
   onChange: (fileEntry: FileEntry) => void;
-};
+}
 
 const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
   fileEntry,
   onChange,
 }) => {
-  const [uploadedFiles, setUploadedFiles] = useState<OutputFileEntry[]>([]);
+  // We don't need local state 'uploadedFiles' to drive the logic, 
+  // we can handle it directly in the event to prevent re-render loops.
+  
   const ctxProviderRef = useRef<
     typeof LR.UploadCtxProvider.prototype & LR.UploadCtxProvider
   >(null);
@@ -27,44 +29,47 @@ const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
   );
 
   useEffect(() => {
+    const ctxProvider = ctxProviderRef.current;
+    if (!ctxProvider) return;
+
+    // 1. Handle the event when files are successfully uploaded
     const handleUploadEvent = (e: CustomEvent<OutputFileEntry[]>) => {
       if (e.detail) {
-        console.log("The uploaded file event is ; ", e);
-        setUploadedFiles([...e.detail]);
+        console.log("Files uploaded:", e.detail);
+        // We don't set local state here to avoid re-triggering this effect
       }
     };
-    ctxProviderRef.current?.addEventListener("data-output", handleUploadEvent);
-    return () => {
-      ctxProviderRef.current?.removeEventListener(
-        "data-output",
-        handleUploadEvent
-      );
-    };
-  }, [setUploadedFiles]);
 
-  useEffect(() => {
-    const resetUploaderState = () =>
-      ctxProviderRef.current?.uploadCollection.clearAll();
-
+    // 2. Handle when the user clicks "Done"
     const handleDoneFlow = () => {
-      resetUploaderState();
+      // Get the current list of files from the provider directly
+      const newFiles = ctxProvider.uploadCollection.items();
 
-      onChange({ files: [...uploadedFiles] });
-      setUploadedFiles([]);
+      // Send to parent (Combine existing files + new files)
+      // Note: We filter duplicates just in case
+      const currentUuids = new Set(fileEntry.files.map(f => f.uuid));
+      const uniqueNewFiles = newFiles.filter(f => !currentUuids.has(f.uuid));
+
+      onChange({ files: [...fileEntry.files, ...uniqueNewFiles] });
+
+      // Clear the uploader UI
+      ctxProvider.uploadCollection.clearAll();
     };
 
-    ctxProviderRef.current?.addEventListener("done-flow", handleDoneFlow);
+    ctxProvider.addEventListener("data-output", handleUploadEvent);
+    ctxProvider.addEventListener("done-flow", handleDoneFlow);
 
     return () => {
-      ctxProviderRef.current?.removeEventListener("done-flow", handleDoneFlow);
+      ctxProvider.removeEventListener("data-output", handleUploadEvent);
+      ctxProvider.removeEventListener("done-flow", handleDoneFlow);
     };
-  }, [fileEntry, onChange, uploadedFiles, setUploadedFiles]);
+  }, [fileEntry.files, onChange]); // Dependencies cleaned up
 
   return (
     <div>
       <lr-config
         ctx-name="my-uploader"
-        pubkey="74e63f3a7042561655f6"
+        pubkey="a8036ed35ef393a55b86" 
         multiple={true}
         confirmUpload={false}
         removeCopyright={true}
@@ -83,13 +88,13 @@ const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
           <div key={file.uuid} className="relative">
             <img
               key={file.uuid}
-              src={`${file.cdnUrl}/-/format/webp/-/quality/smart/-/stretch/fill/
-              `}
+              src={`${file.cdnUrl}/-/format/webp/-/quality/smart/-/stretch/fill/`}
+              className="w-full h-full object-cover rounded-md"
             />
 
-            <div className="cursor-pointer flex justify-center absolute -right-2 -top-2 bg-white border-2 border-slate-800  rounded-full w-7 h-7">
+            <div className="cursor-pointer flex justify-center absolute -right-2 -top-2 bg-white border-2 border-slate-800 rounded-full w-7 h-7">
               <button
-                className="text-slate-800 text-center"
+                className="text-slate-800 text-center font-bold"
                 type="button"
                 onClick={() => handleRemoveClick(file.uuid)}
               >

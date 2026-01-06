@@ -10,4 +10,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    exclude: ['@uploadcare/react-uploader', '@uploadcare/file-uploader'],
+  },
 }) 
