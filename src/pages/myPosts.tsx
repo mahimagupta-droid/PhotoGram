@@ -14,7 +14,7 @@ export default function MyPosts() {
       const tempArr: DocResponse[] = [];
 
       // 1. FIX: Check 'empty', not 'data.length'
-      if (!querySnapShot.empty) {
+      if (!querySnapShot.exists) {
         
         // 2. FIX: Iterate using 'forEach' directly on the snapshot
         querySnapShot.forEach((doc) => {
@@ -69,10 +69,10 @@ export default function MyPosts() {
           </h3>
         </div>
       </div>
-      <div className="p-8">
+      <div className="p-8 border max-w-3xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {/* Ensure the function is called properly */}
-          {data.length > 0 ? renderPosts() : <div>...Loading Posts or No Posts Found</div>}
+          {data.length > 0 ? renderPosts() : <div>...Loading Posts</div>}
         </div>
       </div>
     </Layout>
