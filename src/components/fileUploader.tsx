@@ -1,111 +1,64 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import * as LR from "@uploadcare/blocks";
-import { type OutputFileEntry } from "@uploadcare/blocks";
-import blocksStyles from "@uploadcare/blocks/web/lr-file-uploader-regular.min.css?url";
-import { type FileEntry } from "@/types/type";
+import { useUserContext } from "@/context/userAuthContext";
+import { storage } from "@/firebaseConfig";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useState } from "react";
 
-LR.registerBlocks(LR);
-
-interface IFileUploaderProps {
-  fileEntry: FileEntry;
-  onChange: (fileEntry: FileEntry) => void;
+type FileUploaderProps = {
+  onUploadComplete: (url: string) => void
 }
 
-const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
-  fileEntry,
-  onChange,
-}) => {
-  // We don't need local state 'uploadedFiles' to drive the logic, 
-  // we can handle it directly in the event to prevent re-render loops.
-  
-  const ctxProviderRef = useRef<
-    typeof LR.UploadCtxProvider.prototype & LR.UploadCtxProvider
-  >(null);
+export default function FileUploader({onUploadComplete}: FileUploaderProps) {
+  const [file, setFile] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false);
+  const { user } = useUserContext()
 
-  const handleRemoveClick = useCallback(
-    (uuid: OutputFileEntry["uuid"]) =>
-      onChange({ files: fileEntry.files.filter((f) => f.uuid !== uuid) }),
-    [fileEntry.files, onChange]
-  );
-
-  useEffect(() => {
-    const ctxProvider = ctxProviderRef.current;
-    if (!ctxProvider) return;
-
-    // 1. Handle the event when files are successfully uploaded
-    const handleUploadEvent = (e: CustomEvent<OutputFileEntry[]>) => {
-      if (e.detail) {
-        console.log("Files uploaded:", e.detail);
-        // We don't set local state here to avoid re-triggering this effect
-      }
+  const handleUpload = async () => {
+    if( file==null || user==null) return;
+    try {
+      setLoading(true);
+      const docRef = ref(storage, `posts/${user.uid}/${Date.now()}-${file.name}`);
+      await uploadBytes(docRef, file);
+      const imgURL = await getDownloadURL(docRef);
+      onUploadComplete(imgURL)
+      setFile(null)
+      alert("photo uploaded successfully!")
+    } catch(error) {
+      console.log("error uploading image", error)
+      alert("image not uploaded")
+    } finally {
+      setLoading(false)
     };
-
-    // 2. Handle when the user clicks "Done"
-    const handleDoneFlow = () => {
-      // Get the current list of files from the provider directly
-      const newFiles = ctxProvider.uploadCollection.items();
-
-      // Send to parent (Combine existing files + new files)
-      // Note: We filter duplicates just in case
-      const currentUuids = new Set(fileEntry.files.map(f => f.uuid));
-      const uniqueNewFiles = newFiles.filter(f => !currentUuids.has(f.uuid));
-
-      onChange({ files: [...fileEntry.files, ...uniqueNewFiles] });
-
-      // Clear the uploader UI
-      ctxProvider.uploadCollection.clearAll();
-    };
-
-    ctxProvider.addEventListener("data-output", handleUploadEvent);
-    ctxProvider.addEventListener("done-flow", handleDoneFlow);
-
-    return () => {
-      ctxProvider.removeEventListener("data-output", handleUploadEvent);
-      ctxProvider.removeEventListener("done-flow", handleDoneFlow);
-    };
-  }, [fileEntry.files, onChange]); // Dependencies cleaned up
+  };
+  console.log("USER:", user);
 
   return (
-    <div>
-      <lr-config
-        ctx-name="my-uploader"
-        pubkey="a8036ed35ef393a55b86" 
-        multiple={true}
-        confirmUpload={false}
-        removeCopyright={true}
-        imgOnly={true}
-      ></lr-config>
+  <div className="flex flex-col gap-4">
+    {/* Hidden native input */}
+    <input
+      type="file"
+      accept="image/*"
+      id="file-input"
+      className="hidden"
+      onChange={(e) => setFile(e.target.files?.[0] || null)}
+    />
 
-      <lr-file-uploader-regular
-        ctx-name="my-uploader"
-        css-src={blocksStyles}
-      ></lr-file-uploader-regular>
+    {/* Custom button */}
+    <label
+      htmlFor="file-input"
+      className="cursor-pointer bg-gray-200 text-gray-700 px-4 py-2 rounded text-center hover:bg-gray-300 transition"
+    >
+      {file ? file.name : "Choose Photo"}
+    </label>
 
-      <lr-upload-ctx-provider ctx-name="my-uploader" ref={ctxProviderRef} />
+    {/* Upload button */}
+    <button
+      onClick={handleUpload}
+      disabled={!file || loading}
+      className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+    >
+      {loading ? "Uploading..." : "Upload Photo"}
+    </button>
+  </div>
+);
 
-      <div className="grid grid-cols-2 gap-4 mt-8">
-        {fileEntry.files.map((file) => (
-          <div key={file.uuid} className="relative">
-            <img
-              key={file.uuid}
-              src={`${file.cdnUrl}/-/format/webp/-/quality/smart/-/stretch/fill/`}
-              className="w-full h-full object-cover rounded-md"
-            />
-
-            <div className="cursor-pointer flex justify-center absolute -right-2 -top-2 bg-white border-2 border-slate-800 rounded-full w-7 h-7">
-              <button
-                className="text-slate-800 text-center font-bold"
-                type="button"
-                onClick={() => handleRemoveClick(file.uuid)}
-              >
-                ×
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default FileUploader;
+}

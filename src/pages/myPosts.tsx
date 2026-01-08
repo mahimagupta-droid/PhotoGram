@@ -13,23 +13,17 @@ export default function MyPosts() {
       const querySnapShot = await getPostByUserId(id);
       const tempArr: DocResponse[] = [];
 
-      // 1. FIX: Check 'empty', not 'data.length'
-      if (!querySnapShot.exists) {
-        
-        // 2. FIX: Iterate using 'forEach' directly on the snapshot
+      if (!querySnapShot.empty) {
         querySnapShot.forEach((doc) => {
-          const data = doc.data() as postData;
-          const responseObj: DocResponse = {
+          const post = doc.data() as postData;
+
+          tempArr.push({
             id: doc.id,
-            ...data,
-          };
-          tempArr.push(responseObj);
+            ...post,
+          });
         });
 
-        console.log("User data received: ", tempArr);
         setData(tempArr);
-      } else {
-        console.log("no such data entry");
       }
     } catch (error) {
       console.log(error);
@@ -38,14 +32,12 @@ export default function MyPosts() {
 
   const renderPosts = () => {
     return data.map((item) => {
-      // 3. FIX: Add a safety check to ensure photos exist
       if (!item.photos || item.photos.length === 0) return null;
 
       return (
-        <div key={item.photos[0].uuid} className="relative group">
+        <div key={item.id} className="relative group">
           <img
-            // 4. FIX: Corrected URL syntax. Added '/-/' before scale_crop
-            src={`${item.photos[0].cdnUrl}/-/progressive/yes/-/scale_crop/300x300/center/`}
+            src={item.photos[0]}   // ✅ Firebase URL directly
             alt="User post"
             className="w-full h-full object-cover rounded-sm"
           />
@@ -55,7 +47,7 @@ export default function MyPosts() {
   };
 
   useEffect(() => {
-    if (user != null) {
+    if (user) {
       getAllPosts(user.uid);
     }
   }, [user]);
@@ -71,7 +63,6 @@ export default function MyPosts() {
       </div>
       <div className="p-8 border max-w-3xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Ensure the function is called properly */}
           {data.length > 0 ? renderPosts() : <div>...Loading Posts</div>}
         </div>
       </div>

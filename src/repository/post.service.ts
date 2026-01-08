@@ -1,6 +1,6 @@
 import type { postData } from "@/types/type";
 import { app } from "@/firebaseConfig"; 
-import { collection, addDoc, query, orderBy, getDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, query, orderBy, getDoc, doc, deleteDoc, getDocs } from "firebase/firestore";
 const COLLECTION_NAME = "posts";
 import { where } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
@@ -28,3 +28,14 @@ export const getSinglePost = (id: string) => {
 export const deletePost = (id:string) => {
     return deleteDoc(doc(db, COLLECTION_NAME, id));
 }
+
+export const getAllPosts = async (): Promise<postData[]> => {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, orderBy("date", "desc"));
+  const snapshot = await getDocs(q);
+  const posts: postData[] = snapshot.docs.map((doc) => ({
+    id: doc.id,        // 🔥 VERY IMPORTANT
+    ...(doc.data() as postData),
+  }));
+  return posts;
+};

@@ -1,50 +1,47 @@
-import FileUploader from "@/components/fileUploader"; // Capital F usually
+import FileUploader from "@/components/fileUploader";
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserContext } from "@/context/userAuthContext";
 import { createPost } from "@/repository/post.service";
-import { type FileEntry, type postData } from "@/types/type"; // Fix casing
+import { type postData } from "@/types/type"; // Fix casing
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
-
-  // State for the uploaded files (Raw Uploadcare data)
-  const [fileEntry, setFileEntry] = useState<FileEntry>({ files: [] });
-
+  const [photos, setPhotos] = useState<string[]>([])
   // State for the post metadata
   const [caption, setCaption] = useState("");
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    // 1. Convert Uploadcare files to your PhotoMeta format
-    const photoMeta = fileEntry.files.map((file) => ({
-      uuid: file.uuid,
-      cdnUrl: file.cdnUrl,
-      name: file.name,
-    }));
+  if (!user) {
+    navigate("/login");
+    return;
+  }
 
-    // 2. Create the final post object
-    if (user != null) {
-      const finalPost: postData = {
-        caption: caption,
-        photos: photoMeta,
-        likes: 0,
-        userlikes: [],
-        userid: user?.uid || null, // Assuming user object has uid
-        date: new Date(),
-      };
-      await createPost(finalPost);
-      navigate("/")
-    } else {
-      navigate("/login");
-    }
+  if (photos.length === 0) {
+    alert("Please upload at least one photo");
+    return;
+  }
+
+  const finalPost: postData = {
+    caption,
+    photos, // 🔥 Firebase URLs
+    likes: 0,
+    userlikes: [],
+    userid: user.uid,
+    date: new Date(),
   };
+
+  await createPost(finalPost);
+  navigate("/");
+};
+
 
   return (
     <Layout>
@@ -76,9 +73,9 @@ const CreatePost = () => {
             </div>
 
             <div className="mt-2 mb-2">
-              <FileUploader fileEntry={fileEntry} onChange={setFileEntry} />
+              
             </div>
-
+            <FileUploader onUploadComplete={(url) => setPhotos((prev) => [...prev, url])}/>
             <Button className="mt-8 w-32" type="submit">
               Post
             </Button>
